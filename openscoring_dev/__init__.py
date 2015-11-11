@@ -55,27 +55,26 @@ class RequestEncoder(JSONEncoder):
 
 class Openscoring:
 
-	def __init__(self, baseUrl = "http://localhost:8080/openscoring", auth = None, headers=None,verify=False):
+	def __init__(self, baseUrl = "http://localhost:8080/openscoring", auth = None,verify=False):
 		self.baseUrl = baseUrl
 		self.auth = auth
-		self.headers = headers
 		self.verify = verify
 
-	def deploy(self, id, pmml):
+	def deploy(self, id, pmml, headers):
 		stream = open(pmml, "rb")
 		try :
-			response = requests.put(self.baseUrl + "/model/" + id, auth = self.auth, headers = self.headers, verify=self.verify, data = stream)
+			response = requests.put(self.baseUrl + "/model/" + id, auth = self.auth, headers = headers, verify=self.verify, data = stream)
 			modelResponse = ModelResponse(**json.loads(response.content))
 			return modelResponse.ensureSuccess()
 		finally:
 			stream.close()
 
-	def evaluate(self, id, payload = {}):
+	def evaluate(self, id, headers,payload = {}):
 		if(isinstance(payload, EvaluationRequest)):
 			evaluationRequest = payload
 		else:
 			evaluationRequest = EvaluationRequest(None, payload)
-		response = requests.post(self.baseUrl + "/model/" + id, auth = self.auth, headers = {"content-type" : "application/json"}, data = json.dumps(evaluationRequest, cls = RequestEncoder))
+		response = requests.post(self.baseUrl + "/model/" + id, auth = self.auth, headers = headers, json = json.dumps(evaluationRequest, cls = RequestEncoder),verify=self.verify)
 		evaluationResponse = EvaluationResponse(**json.loads(response.content))
 		evaluationResponse.ensureSuccess()
 		if(isinstance(payload, EvaluationRequest)):
