@@ -69,7 +69,7 @@ class Openscoring:
 		finally:
 			stream.close()
 
-	def evaluate(self, id, headers,payload = {}):
+	def evaluate(self, id, payload, headers):
 		if(isinstance(payload, EvaluationRequest)):
 			evaluationRequest = payload
 		else:
