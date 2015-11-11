@@ -69,12 +69,12 @@ class Openscoring:
 		finally:
 			stream.close()
 
-	def evaluate(self, id, payload, headers):
+	def evaluate(self, id, payload, headers_eval = {'content-type': 'application/json'}):
 		if(isinstance(payload, EvaluationRequest)):
 			evaluationRequest = payload
 		else:
 			evaluationRequest = EvaluationRequest(None, payload)
-		response = requests.post(self.baseUrl + "/model/" + id, auth = self.auth, headers = headers, json = json.dumps(evaluationRequest, cls = RequestEncoder),verify=self.verify)
+		response = requests.post(self.baseUrl + "/model/" + id, auth = self.auth, headers = headers_eval, json = payload,verify=self.verify)
 		evaluationResponse = EvaluationResponse(**json.loads(response.content))
 		evaluationResponse.ensureSuccess()
 		if(isinstance(payload, EvaluationRequest)):
