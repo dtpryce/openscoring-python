@@ -63,7 +63,7 @@ class Openscoring:
 	def deploy(self, id, pmml, headers_dep={'content-type': 'text/xml'}):
 		stream = open(pmml, "rb")
 		try :
-			response = requests.put(self.baseUrl + "/model/" + id, auth = self.auth, headers = headers, verify=self.verify, data = stream)
+			response = requests.put(self.baseUrl + "/model/" + id, auth = self.auth, headers = headers_dep, verify=self.verify, data = stream)
 			modelResponse = ModelResponse(**json.loads(response.content))
 			return modelResponse.ensureSuccess()
 		finally:
