@@ -4,6 +4,7 @@ from json import JSONDecoder, JSONEncoder
 
 import json
 import requests
+requests.packages.urllib3.disable_warnings()
 
 __copyright__ = "Copyright (c) 2015 Villu Ruusmann"
 __license__ = "GNU Affero General Public License (AGPL) version 3.0"
@@ -54,14 +55,16 @@ class RequestEncoder(JSONEncoder):
 
 class Openscoring:
 
-	def __init__(self, baseUrl = "http://localhost:8080/openscoring", auth = None):
+	def __init__(self, baseUrl = "http://localhost:8080/openscoring", auth = None, headers=None,verify=False):
 		self.baseUrl = baseUrl
 		self.auth = auth
+		self.headers = headers
+		self.verify = verify
 
 	def deploy(self, id, pmml):
 		stream = open(pmml, "rb")
 		try :
-			response = requests.put(self.baseUrl + "/model/" + id, auth = self.auth, headers = {"content-type" : "application/xml"}, data = stream)
+			response = requests.put(self.baseUrl + "/model/" + id, auth = self.auth, headers = self.headers, verify=self.verify, data = stream)
 			modelResponse = ModelResponse(**json.loads(response.content))
 			return modelResponse.ensureSuccess()
 		finally:
